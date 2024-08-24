@@ -1,6 +1,8 @@
 # HotS Tracer Locked and Loaded Accessibility Tool
 Accessibility tool for Heroes of the Storm Tracer's Locked and Loaded talent.
+
 Automatically reactivates Reload within the last 50% of its cast time to increase Tracer's Basic Attack damage by 40% for that magazine.
+
 Essentially, the tool automatically presses the D button to make Locked and Loaded a passive talent that gives you 40% bonus damage unconditionally.
 
 ### Download
@@ -17,11 +19,11 @@ You need to know what your ping is for the tool to work properly
 7. Add your Ping at the end of the Target field after a space. It should look like C:\games\tools\Tracer.exe 60
 
 ### Usage:
-Launch the tool by opening the shortcut you have created
 Launch the tool when you:
-1. Have selected the Locked and Loaded talent
-2. Have full magazine (20/20)
+- Have selected the Locked and Loaded talent
+- Have full magazine (20/20)
 
-Wait a bit(2-4 seconds)
-After you are asked to start shooting, do it.
-The tool should finish initializing after you have fired one magazine.
+Launch the tool by opening the shortcut you have created
+1. Wait a bit(2-4 seconds)
+2. After you are asked to start shooting, do it.
+3. The tool should finish initializing after you have fired one magazine.
