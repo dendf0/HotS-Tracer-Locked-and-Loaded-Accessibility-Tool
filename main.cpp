@@ -16,7 +16,6 @@ void PressKey(WORD key)
     Sleep(15);
     ip.ki.dwFlags = KEYEVENTF_KEYUP;
     SendInput(1, &ip, sizeof(INPUT));
-    MessageBeep(MB_OK);
 }
 
 void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foundAddresses) {
@@ -145,3 +144,4 @@ int main(int argc, char* argv[])
     system("pause");
     return 0;
 }
+
