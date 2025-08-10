@@ -6,8 +6,16 @@
 
 using namespace std;
 
-static void PressKey(WORD key)
-{
+const int ping = 60;
+
+const int timeToMount = 1000;
+const int timeToHearthstone = 6000;
+const int timeForBonus = 550;
+
+const int fullMagazineValue = 8192 * 10;
+const int emptyMagazineValue = 0;
+
+static void PressKey(WORD key) {
     INPUT ip = {0};
     ip.type = INPUT_KEYBOARD;
     ip.ki.wVk = key;
@@ -16,6 +24,15 @@ static void PressKey(WORD key)
     Sleep(15);
     ip.ki.dwFlags = KEYEVENTF_KEYUP;
     SendInput(1, &ip, sizeof(INPUT));
+}
+
+static void PressD() {
+    PressKey(0x44);
+}
+
+static void WaitForBonusAndPressD() {
+    Sleep(timeForBonus + ping);
+    PressD();
 }
 
 static void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foundAddresses) {
@@ -50,10 +67,7 @@ static bool IsValidMultipleOf8192(int value) {
     return (value % factor == 0) && (quotient >= 1 && quotient <= 9);
 }
 
-int main()
-{
-    const int maxRTT = 120;
-    const int ping = maxRTT / 2;
+int main() {
     LPCSTR className = "Heroes of the Storm";
     HWND hWnd = FindWindowA(className, nullptr);
     DWORD pID = 0;
@@ -64,8 +78,6 @@ int main()
         return 0;
     }
     HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, false, pID);
-    int fullMagazineValue = 8192 * 10;
-    int emptyMagazineValue = 0;
     vector<DWORDLONG> fullMagazineAddresses;
     cout << "Tool has to be launched when Tracer has full magazine." << endl;
     ScanProcessMemory(pHandle, fullMagazineValue, fullMagazineAddresses);
@@ -100,43 +112,40 @@ int main()
     cout << "Tool initialized." << endl;
     int reloadValue = 0;
     int magazineValue = 0, secondMagazineValue = 0;
-    const int timeToMount = 1000;
-    const int timeToHearthstone = 6000;
-    const int timeBeforeReload = 550;
     while (true)
     {
-        if (GetAsyncKeyState(0x42) & 0x8000) { // B
+        if (GetAsyncKeyState(0x5A) & 0x8000) { // Z
             ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
-            Sleep(timeToHearthstone + timeBeforeReload + ping);
+            Sleep(timeToMount + timeForBonus + ping);
             ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &secondMagazineValue, sizeof(secondMagazineValue), nullptr);
             if (magazineValue == secondMagazineValue)
-                PressKey(0x44);
-            continue;
+                PressD();
+        }
+        else if (GetAsyncKeyState(0x42) & 0x8000) { // B
+            ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
+            Sleep(timeToHearthstone + timeForBonus + ping);
+            ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &secondMagazineValue, sizeof(secondMagazineValue), nullptr);
+            if (magazineValue == secondMagazineValue)
+                PressD();
         }
         else if (GetAsyncKeyState(0x44) & 0x8000) { // D
-            Sleep(timeBeforeReload + ping);
-            PressKey(0x44);
-            continue;
+            ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
+            if (magazineValue != fullMagazineValue) 
+                WaitForBonusAndPressD();
         }
         else if (GetAsyncKeyState(0x45) & 0x8000) { // E
-            Sleep(timeBeforeReload + ping);
-            PressKey(0x44);
-            continue;
-        }
-        else if (GetAsyncKeyState(0x5A) & 0x8000) { // Z
             ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
-            Sleep(timeToMount + timeBeforeReload + ping);
-            ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &secondMagazineValue, sizeof(secondMagazineValue), nullptr);
-            if (magazineValue == secondMagazineValue)
-                PressKey(0x44);
-            continue;
+            if (magazineValue != fullMagazineValue)
+                WaitForBonusAndPressD();
         }
-        ReadProcessMemory(pHandle, (LPCVOID)reloadAddress, &reloadValue, sizeof(reloadValue), nullptr);
-        ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
-        if (magazineValue == 0 && reloadValue >= 1536 && reloadValue <= 3072) {
-            Sleep(ping);
-            PressKey(0x44);
-            Sleep(350);
+        else {
+            ReadProcessMemory(pHandle, (LPCVOID)reloadAddress, &reloadValue, sizeof(reloadValue), nullptr);
+            ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
+            if (magazineValue == 0 && reloadValue >= 1536 && reloadValue <= 3072) {
+                Sleep(ping);
+                PressD();
+                Sleep(350);
+            }
         }
         Sleep(15);
     }
