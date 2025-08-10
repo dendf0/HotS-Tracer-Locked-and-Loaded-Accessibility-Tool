@@ -1,4 +1,4 @@
-﻿#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vector>
 #include <iostream>
@@ -8,13 +8,15 @@ using namespace std;
 
 void PressKey(WORD key)
 {
-    INPUT ip;
+    INPUT ip = {0};
     ip.type = INPUT_KEYBOARD;
     ip.ki.wVk = key;
     ip.ki.dwFlags = 0;
     SendInput(1, &ip, sizeof(INPUT));
+    Sleep(15);
     ip.ki.dwFlags = KEYEVENTF_KEYUP;
     SendInput(1, &ip, sizeof(INPUT));
+    MessageBeep(MB_OK);
 }
 
 void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foundAddresses) {
@@ -51,19 +53,8 @@ bool isValidMultipleOf8192(int value) {
 
 int main(int argc, char* argv[])
 {
-    const int defaultPing = 50;
-    int ping = defaultPing;
-    if (argc > 1) {
-        ping = std::atoi(argv[1]);
-        if (ping < 0) {
-            cerr << "Invalid ping value. Using default." << endl;
-            ping = defaultPing;
-        }
-    }
-    else {
-        cout << "No ping value is provided. Using default." << endl;
-    }
-    cout << "Ping is set to: " << ping << " ms" << endl;
+    const int maxRTT = 160;
+    const int ping = maxRTT / 2;
     LPCSTR className = "Heroes of the Storm";
     HWND hWnd = FindWindowA(className, nullptr);
     DWORD pID = 0;
@@ -144,10 +135,11 @@ int main(int argc, char* argv[])
         ReadProcessMemory(pHandle, (LPCVOID)reloadAddress, &reloadValue, sizeof(reloadValue), nullptr);
         ReadProcessMemory(pHandle, (LPCVOID)magazineAddress, &magazineValue, sizeof(magazineValue), nullptr);
         if (magazineValue == 0 && reloadValue >= 1536 && reloadValue <= 3072) {
+            Sleep(ping);
             PressKey(0x44);
-            Sleep(450);
+            Sleep(350);
         }
-        Sleep(100);
+        Sleep(15);
     }
     CloseHandle(pHandle);
     system("pause");
