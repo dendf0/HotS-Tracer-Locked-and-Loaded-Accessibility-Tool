@@ -52,7 +52,7 @@ bool isValidMultipleOf8192(int value) {
 
 int main(int argc, char* argv[])
 {
-    const int maxRTT = 160;
+    const int maxRTT = 120;
     const int ping = maxRTT / 2;
     LPCSTR className = "Heroes of the Storm";
     HWND hWnd = FindWindowA(className, nullptr);
@@ -144,4 +144,5 @@ int main(int argc, char* argv[])
     system("pause");
     return 0;
 }
+
 
