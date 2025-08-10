@@ -8,16 +8,6 @@ Essentially, the tool automatically presses the D button to make Locked and Load
 ### Download
 https://github.com/dendf0/HotS-Tracer-Locked-and-Loaded-Accessibility-Tool/releases
 
-### Setup:
-You need to know what your ping is for the tool to work properly
-1. Launch any game in HotS (can't be Try mode, ping is 0 there)
-2. Press Ctrl+Alt+F
-3. There should be PING in the top left corner of the screen
-4. Right click the executable Tracer.exe, select "Create shortcut"
-5. Right click the shortcut, select "Properties"
-6. In the Shortcut tab, the Target field should contain the path to executable, e.g. C:\games\tools\Tracer.exe
-7. Add your Ping at the end of the Target field after a space. It should look like C:\games\tools\Tracer.exe 60
-
 ### Usage:
 Launch the tool when you:
 - Have selected the Locked and Loaded talent
