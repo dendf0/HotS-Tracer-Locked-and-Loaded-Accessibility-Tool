@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void PressKey(WORD key)
+static void PressKey(WORD key)
 {
     INPUT ip = {0};
     ip.type = INPUT_KEYBOARD;
@@ -18,7 +18,7 @@ void PressKey(WORD key)
     SendInput(1, &ip, sizeof(INPUT));
 }
 
-void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foundAddresses) {
+static void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foundAddresses) {
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     MEMORY_BASIC_INFORMATION memInfo;
@@ -44,13 +44,13 @@ void ScanProcessMemory(HANDLE hProcess, int targetValue, vector<DWORDLONG>& foun
     }
 }
 
-bool isValidMultipleOf8192(int value) {
+static bool IsValidMultipleOf8192(int value) {
     const int factor = 8192;
     int quotient = value / factor;
     return (value % factor == 0) && (quotient >= 1 && quotient <= 9);
 }
 
-int main(int argc, char* argv[])
+int main()
 {
     const int maxRTT = 120;
     const int ping = maxRTT / 2;
@@ -144,5 +144,3 @@ int main(int argc, char* argv[])
     system("pause");
     return 0;
 }
-
-
